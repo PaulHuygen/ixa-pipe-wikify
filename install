@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd $thisdir
+set -e
+
+function install_spotlight_jar () {
+  echo 'Installing dbpedia-spotlight JAR as a local maven repository...'
+  spotlightjar=dbpedia-spotlight-0.7.jar
+  if
+      [ ! -e ${spotlightjar} ]
+  then
+      wget http://spotlight.sztaki.hu/downloads/archive/2014/${spotlightjar} 
+  fi
+  mvn install:install-file \
+    -Dfile=${spotlightjar}  \
+    -DgroupId=ixa -DartifactId=dbpedia-spotlight -Dversion=0.7 \
+    -Dpackaging=jar -DgeneratePom=true
+  
+}
+
+# function install_wikipediamodule () {
+#   wikipediamodule_url="http://ixa2.si.ehu.es/ixa-pipes/models/wikipedia-db.v1.tar.gz"
+#   cd $thisdir
+#   mkdir lib
+#   cd lib
+#     wget $wikipediamodule_url
+#     tar -xzf wikipedia-db.v1.tar.gz
+#     rm wikipedia-db.v1.tar.gz
+#   cd $thisdir
+# }
+
+# # ##
+# # Enters the directory given in the first argument and notifies the user about
+# # this.
+# #
+# # @param [String] $1 The directory to change the current working directory to.
+# #
+# enter_directory()
+# {
+#     full_path=$(readlink -f $1)
+# 
+#     echo "Changing PWD to ${full_path}"
+#     cd $1
+# }
+
+##
+# Shows the message passed as the first argument and terminates the script.
+#
+# @param [String] $1 The message to display.
+#
+abort()
+{
+    echo $1
+    exit 1
+}
+
+install_spotlight_jar
+# install_wikipediamodule
+mvn clean package
+mv target/ixa-pipe-wikify-1.4.0.jar .

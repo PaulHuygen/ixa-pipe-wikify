@@ -1,0 +1,56 @@
+#!/bin/bash
+thisdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+JARFILE=ixa-pipe-wikify-1.4.0.jar
+cd $thisdir
+# Need to set:
+# 1. URL of Spotlight host
+# 2. Port for Spotlight
+# 3. Location of wikipedia-db
+opts=""
+while getopts h:p:w opt; do
+   case $opt in
+     h) spotlighthost=$OPTARG
+        ;;
+     p) spotlightport=$OPTARG
+        ;;
+     w) WIKIDB=$OPTARG
+        ;;
+     *) echo "Unknown option." 
+        exit 1
+        ;;
+    esac
+done
+
+
+spotlighthost_def=localhost
+spotlighthost=${spotlighthost:-${spotlighthost_DEF}}
+
+case ${naflang} in
+   de) spotlightport_def=2010
+       ;;
+   en) spotlightport_def=2020
+       ;;
+   es) spotlightport_def=2030
+       ;;
+   fr) spotlightport_def=2040
+       ;;
+   it) spotlightport_def=2050
+       ;;
+   nl) spotlightport_def=2060
+       ;;
+   *) spotlightport_def=2020
+       ;;
+esac
+spotlightport=${spotlightport:-${spotlightport_def}}
+
+WIKIDB_DEF=${thisdir}/lib/wikipedia-db
+WIKIDB=${WIKIDB:-${WIKIDB_DEF}}
+if
+  [ "${WIKIDB}x" == "x" ] || [ "${naflang}" == "en" ]
+then
+  wikip_arg=""
+else 
+  wikip_arg="-i ${WIKIDB} -n ${naflang}En"
+fi
+
+cat | java -Xmx1000m -jar $JARFILE -s "http://"${spotlighthost} -p ${spotlightport} 
