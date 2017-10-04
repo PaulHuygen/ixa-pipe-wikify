@@ -6,10 +6,12 @@ set -e
 function install_spotlight_jar () {
   echo 'Installing dbpedia-spotlight JAR as a local maven repository...'
   spotlightjar=dbpedia-spotlight-0.7.jar
+  spotlighturl=https://github.com/dbpedia-spotlight/dbpedia-spotlight/releases/download/release-0.7/${spotlightjar}
   if
       [ ! -e ${spotlightjar} ]
   then
-      wget http://spotlight.sztaki.hu/downloads/archive/2014/${spotlightjar} 
+#      wget http://spotlight.sztaki.hu/downloads/archive/2014/${spotlightjar}
+      wget ${spotlighturl}
   fi
   mvn install:install-file \
     -Dfile=${spotlightjar}  \
